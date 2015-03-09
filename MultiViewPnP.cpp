@@ -83,11 +83,11 @@ void MultiViewPnP::writePLY() {
 	stringstream ss2;
 	ss2 << b;
 	string minview = ss2.str();
-	std::string filename = "/Users/ngtk/pics/temp/" + str + "-w" + winsize + "-v" + minview + ".ply";
+	std::string filename = "/Users/ngtk/pics/temp/" + str + "-w" + winsize
+			+ "-v" + minview + ".ply";
 
 	cout << filename << endl;
 	myfile.open(filename.c_str());
-
 
 	vector<cv::Point3d> cloud = getPointCloud();
 	vector<cv::Vec3b> colors = getPointCloudRGB();
@@ -104,7 +104,6 @@ void MultiViewPnP::writePLY() {
 	myfile << "property uchar red" << endl;
 	myfile << "property uchar green" << endl;
 	myfile << "property uchar blue" << endl;
-
 
 	myfile << "end_header" << endl;
 
@@ -183,7 +182,6 @@ void MultiViewPnP::writePLYPruned() {
 	myfile << "property uchar green" << endl;
 	myfile << "property uchar blue" << endl;
 
-
 	myfile << "end_header" << endl;
 
 	for (unsigned int n = 0; n < cloud.size(); n++) {
@@ -250,9 +248,12 @@ bool MultiViewPnP::IsGoodPair(int v1, int v2, bool forTriangulation) {
 			if ((*i).second.size() < 100)
 				matches_sizes.push_back(make_pair(100, (*i).first));
 			else {
-				Hinliers = FindHomographyInliers2Views((*i).first.first,(*i).first.second);
-				percent = (int) (((double) Hinliers)/ ((double) (*i).second.size()) * 100.0);
-				cout << "[" << (*i).first.first << "," << (*i).first.second	<< " = " << percent << "] ";
+				Hinliers = FindHomographyInliers2Views((*i).first.first,
+						(*i).first.second);
+				percent = (int) (((double) Hinliers)
+						/ ((double) (*i).second.size()) * 100.0);
+				cout << "[" << (*i).first.first << "," << (*i).first.second
+						<< " = " << percent << "] ";
 				cout << endl;
 			}
 			break;
@@ -608,7 +609,6 @@ bool MultiViewPnP::TriangulatePointsBetweenViews_vid(cv::Matx34d& P1,
 	return true;
 }
 
-
 void MultiViewPnP::AdjustCurrentBundle_vid() {
 	cout
 			<< "======================== Bundle Adjustment (vid) ==========================\n";
@@ -697,11 +697,13 @@ void MultiViewPnP::PruneMatchesBasedOnF() {
 	}
 }
 
-
 void MultiViewPnP::RecoverDepthFromImagesVid() {
-	std::cout<< "======================================================================\n";
-	std::cout<< "======================== Video Depth Recovery Start ========================\n";
-	std::cout<< "======================================================================\n";
+	std::cout
+			<< "======================================================================\n";
+	std::cout
+			<< "======================== Video Depth Recovery Start ========================\n";
+	std::cout
+			<< "======================================================================\n";
 
 	feature_matcher = new FeatureMatcher(imgs, imgpts);
 	for (unsigned int i = 0; i < imgs.size(); i++) {
@@ -716,12 +718,10 @@ void MultiViewPnP::RecoverDepthFromImagesVid() {
 	int baselineTriangulationDone = 0; //no initial traingulation
 	bool stop_search = false;
 #ifdef _ZL_DEBUG
-	ofstream fp ;
-	fp.open("log.txt",ofstream::out|ofstream::app);
+	ofstream fp;
+	fp.open("log.txt",ofstream::out);
 #endif
 	while (!stop_search) {
-		cout << "good view size: " << good_views.size() << endl;
-		cout << "anchorView = " << anchorView << endl;
 		bool done_k = false;
 		int end_search_for_k = anchorView + LOOK_AHEAD_NVIEWS; //search space
 		if (end_search_for_k > (int) imgs.size()) {
@@ -730,14 +730,15 @@ void MultiViewPnP::RecoverDepthFromImagesVid() {
 		for (int k = anchorView + 1; k < end_search_for_k && (!done_k); k++) {
 #ifdef _ZL_DEBUG
 			fp<<"1111::k value: "<<k<<" anchorView: "<<anchorView<<" done_k:"<<done_k<<" img size:"<<imgs.size()<<" stop_search: "<<stop_search<<
-					" good_views size:"<< good_views.size()<<endl;
+			" good_views size:"<< good_views.size()<<endl;
 #endif
 			if (baselineTriangulationDone == 0) {
 #ifdef _ZL_DEBUG
-			fp<<"2222::k value: "<<k<<" anchorView: "<<anchorView<<"  done_k:"<<done_k<<"   img size:"<<imgs.size()<<" stop_search: "<<stop_search<<
-					" good_views size:"<< good_views.size()<<endl;
+				fp<<"2222::k value: "<<k<<" anchorView: "<<anchorView<<"  done_k:"<<done_k<<"   img size:"<<imgs.size()<<" stop_search: "<<stop_search<<
+				" good_views size:"<< good_views.size()<<endl;
 #endif
-				std::cout << "=====" << anchorView << "," << k << "====="<< std::endl;
+				std::cout << "=====" << anchorView << "," << k << "====="
+						<< std::endl;
 				std::cout << "------------ Match " << imgs_names[anchorView]
 						<< "," << imgs_names[k] << " ------------\n";
 				std::vector<cv::DMatch> matches_tmp;
@@ -764,36 +765,32 @@ void MultiViewPnP::RecoverDepthFromImagesVid() {
 			for (set<int>::iterator done_view = good_views.begin();done_view != good_views.end(); ++done_view) {
 				cout << "*done_view = " << *done_view<< "......................." << endl;
 				int view = *done_view;
-				cout << "good_views.size() = " << good_views.size()
-						<< ",  current good_views  = " << view << endl;
+				cout << "good_views.size() = " << good_views.size()	<< ",  current good_views  = " << view << endl;
 				if (count < startIndex) {
 					cout << "good_views skipped = " << view << endl;
 					count++;
 					continue;
 				}
-
 #ifdef _ZL_DEBUG
-				fp<<"3333::k value: "<<k<<" anchorView: "<<anchorView<<"  done_view:"<<*done_view<<" img size:"<<imgs.size()<<" stop_search: "
-						<<stop_search<<" good_views size:"<< good_views.size() << endl;
+					fp<<"3333::k value: "<<k<<" anchorView: "<<anchorView<<"  done_view:"<<*done_view<<" img size:"<<imgs.size()<<" stop_search: "
+					<<stop_search<<" good_views size:"<< good_views.size() << endl;
 #endif
+					std::vector<cv::DMatch> matches_tmp;
+					feature_matcher->MatchFeatures(k, view, &matches_tmp);
+					matches_matrix[std::make_pair(k, view)] = matches_tmp;
+					std::vector<cv::DMatch> matches_tmp_flip = FlipMatches(
+							matches_tmp);
+					matches_matrix[std::make_pair(view, k)] = matches_tmp_flip;
 
-				std::vector<cv::DMatch> matches_tmp;
-				feature_matcher->MatchFeatures(k, view, &matches_tmp);
-				matches_matrix[std::make_pair(k, view)] = matches_tmp;
-				std::vector<cv::DMatch> matches_tmp_flip = FlipMatches(
-						matches_tmp);
-				matches_matrix[std::make_pair(view, k)] = matches_tmp_flip;
-
-				cout << "@@@@@ pruning between pair (" << k << "," << view
-						<< ")" << endl;
-				//Fundamental matrix itself is not used. Just to prune the matched matrix
-				GetFundamentalMat(imgpts[k], imgpts[view], imgpts_good[k],
-						imgpts_good[view],
-						matches_matrix[std::make_pair(k, view)]);
-				matches_matrix[std::make_pair(view, k)] = FlipMatches(
-						matches_matrix[std::make_pair(k, view)]);
-			}
-
+					cout << "@@@@@ pruning between pair (" << k << "," << view
+							<< ")" << endl;
+					//Fundamental matrix itself is not used. Just to prune the matched matrix
+					GetFundamentalMat(imgpts[k], imgpts[view], imgpts_good[k],
+							imgpts_good[view],
+							matches_matrix[std::make_pair(k, view)]);
+					matches_matrix[std::make_pair(view, k)] = FlipMatches(
+							matches_matrix[std::make_pair(k, view)]);
+				}
 			if (baselineTriangulationDone == 0) { //call once only for first good pairs. After this, we get initial point cloud
 				if (IsGoodPair(anchorView, k, true)) {
 					if (GetBaseLineTriangulation_vid(anchorView, k)) {
@@ -813,62 +810,75 @@ void MultiViewPnP::RecoverDepthFromImagesVid() {
 					vector<cv::Point2f> tmp2d;
 					Find2D3DCorrespondences_vid(k, anchorView, tmp3d, tmp2d);
 					cv::Mat_<double> rvec(1, 3), t, R;
-					bool pose_estimated = FindPoseEstimation(k, rvec, t, R, tmp3d, tmp2d);
+					bool pose_estimated = FindPoseEstimation(k, rvec, t, R,
+							tmp3d, tmp2d);
 					if (pose_estimated) { // pose estimated
 						Pmats[k] = cv::Matx34d(R(0, 0), R(0, 1), R(0, 2), t(0),
 								R(1, 0), R(1, 1), R(1, 2), t(1), R(2, 0),
 								R(2, 1), R(2, 2), t(2));
 						mapViews[good_views.size()].push_back(k);
-						cout << "mapViews[good_views.size()] = "<< mapViews[good_views.size()][0];
+						cout << "mapViews[good_views.size()] = "
+								<< mapViews[good_views.size()][0];
 
 						good_views.insert(k);
 						anchorView = k;
 						done_k = true;
-						cout << "************ good_views.size() = "	<< good_views.size() << endl;
-						startIndex = good_views.size() - WINDOW_SIZE - 1;
+						cout << "************ good_views.size() = "
+								<< good_views.size() << endl;
+						int startIndex = good_views.size() - WINDOW_SIZE - 1;
 
 						int count = 0;
-						for (set<int>::iterator done_view = good_views.begin();done_view != good_views.end(); ++done_view) {
+						for (set<int>::iterator done_view = good_views.begin();
+								done_view != good_views.end(); ++done_view) {
 
-							cout << "*done_view = " << *done_view<< "......................." << endl;
+							cout << "*done_view = " << *done_view
+									<< "......................." << endl;
 							int view = *done_view;
-							cout << "good_views.size() = " << good_views.size()<< ",  current good_views  = " << view<< endl;
+							cout << "good_views.size() = " << good_views.size()
+									<< ",  current good_views  = " << view
+									<< endl;
 							if (count < startIndex) {
 								cout << "good_views skipped = " << view << endl;
 								count++;
 								continue;
 							}
 #ifdef _ZL_DEBUG
-				fp<<"4444::k value: "<<k<<" anchorView: "<<anchorView<<" done_view:"<<*done_view<<" img size:"<<imgs.size()<<" stop_search: "<<stop_search
-						<<" good_views size:"<<good_views.size()<<endl;
+							fp<<"4444::k value: "<<k<<" anchorView: "<<anchorView<<" done_view:"<<*done_view<<" img size:"<<imgs.size()<<" stop_search: "<<stop_search
+							<<" good_views size:"<<good_views.size()<<endl;
 #endif
 							if (k != view) {
 								vector<CloudPoint> new_triangulated;
 								vector<int> add_to_cloud;
-								bool good_triangulation = TriangulatePointsBetweenViews_vid(Pmats[view], Pmats[k], view, k,new_triangulated, add_to_cloud);
+								bool good_triangulation =
+										TriangulatePointsBetweenViews_vid(
+												Pmats[view], Pmats[k], view, k,
+												new_triangulated, add_to_cloud);
 								if (!good_triangulation)
 									continue;
-								std::cout << "before triangulation: "<< pcloud.size();
-								for (unsigned int j = 0;j < add_to_cloud.size(); j++) {
+								std::cout << "before triangulation: "
+										<< pcloud.size();
+								for (unsigned int j = 0;
+										j < add_to_cloud.size(); j++) {
 									if (add_to_cloud[j] == 1)
 										pcloud.push_back(new_triangulated[j]);
 								}
-								std::cout << " after " << pcloud.size()	<< std::endl;
+								std::cout << " after " << pcloud.size()
+										<< std::endl;
 								AdjustCurrentBundle_vid();
 							}
 						}
 					}
-				} else {// pose not estimated
+				} else { // pose not estimated
 					cout << "Not a good pair! " << endl;
-					cout << " k = " << k << "   anchorView = " << anchorView << endl;
+					cout << " k = " << k << "   anchorView = " << anchorView
+							<< endl;
 				}
 				if ((unsigned int) k >= imgs.size() - 1) {
 					done_k = true;
 					stop_search = true;
 				}
-			}//end of non-first traigulation
+			} //end of non-first traigulation
 		} //end of current anchor view search
-
 
 		cout << "baseLineTriangulationDone = " << baselineTriangulationDone	<< endl;
 		cout << "done_k = " << done_k << endl;
@@ -880,12 +890,9 @@ void MultiViewPnP::RecoverDepthFromImagesVid() {
 			stop_search = true;
 		}
 
-		if(previous_anchorView==anchorView)
-		{
-			cout<<"endless loop here"<<endl;
-		}
-		else
-		{
+		if (previous_anchorView == anchorView) {
+			stop_search = true;
+		} else {
 			previous_anchorView = anchorView;
 		}
 
@@ -898,8 +905,14 @@ void MultiViewPnP::RecoverDepthFromImagesVid() {
 #ifdef _ZL_DEBUG
 	fp.close();
 #endif
-	cout<< "======================================================================"<< endl;
-	cout<< "========================= Depth Recovery DONE ========================"<< endl;
-	cout<< "======================================================================"<< endl;
+	cout
+			<< "======================================================================"
+			<< endl;
+	cout
+			<< "========================= Depth Recovery DONE ========================"
+			<< endl;
+	cout
+			<< "======================================================================"
+			<< endl;
 }
 
