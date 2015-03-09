@@ -7,13 +7,13 @@ using namespace std;
 using namespace cv;
 
 int main() {
-	int runType = 3;
+	int runType = 1;
 	switch (runType) {
 	case 0:
-		validateOpenCVInstall("./DATA/05180.png");
+		validateOpenCVInstall("./Test/04355.png");
 		break;
 	case 1:
-		SFMReconstruct("/home/happierboy/Desktop/RA/3DProject/DATA/test/","./target.ply");
+		SFMReconstruct("/home/happierboy/Desktop/RA/3DProject/TestSequence/Tuas_C/IR/","./target.ply");
 		break;
 	case 2:
 		FICPRegister("./target.ply", "./target.ply", "./");
