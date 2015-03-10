@@ -52,66 +52,6 @@ imgs_names(imgs_names_),features_matched(false),use_rich_features(true)
 
 
 
-/******** to be restored
-
-void MultiViewHandler::OnlyMatchFeatures()
-{
-	if(features_matched) {
-        return;
-    }
-
-    feature_matcher = new FeatureMatcher(imgs,imgpts);
-	int loop1_top = imgs.size() - 1, loop2_top = imgs.size();
-	int frame_num_i = 0;
-
-
-	//ly: match image sequence in moving window with size defined by WINDOW_SIZE and step defined by WINDOW_STEP
-	if(ORDERED_INPUT){
-		int iterations = (imgs.size()-WINDOW_SIZE)/WINDOW_STEP+1;
-		for (int k=0; k<iterations;k++){
-			int windowBeginIndex = k*WINDOW_STEP; //inclusive
-			int windowEndIndex = (k==(iterations-1))?imgs.size():windowBeginIndex+WINDOW_SIZE;	//exclusive; last iteration must read till end even if it exceeds window size
-			int previousWindowEndIndex = (k==0)?windowBeginIndex+1:(k-1)*WINDOW_STEP+WINDOW_SIZE;	//which will also be the starting index of new images after window moves																			//exclusive
-			std::cout<<"===== current window ===== ["<<windowBeginIndex<<","<<previousWindowEndIndex<<","<<windowEndIndex<<")"<<std::endl;
-#pragma omp parallel for
-			for (frame_num_i = windowEndIndex-1; frame_num_i >= previousWindowEndIndex; frame_num_i--) {
-				for (int frame_num_j = frame_num_i - 1; frame_num_j >= windowBeginIndex; frame_num_j--)
-				{
-					std::cout<<"====="<<frame_num_i<<","<<frame_num_j<<"====="<<std::endl;
-					std::cout << "------------ Match " << imgs_names[frame_num_i] << ","<<imgs_names[frame_num_j]<<" ------------\n";
-					std::vector<cv::DMatch> matches_tmp;
-					feature_matcher->MatchFeatures(frame_num_i,frame_num_j,&matches_tmp);
-					matches_matrix[std::make_pair(frame_num_i,frame_num_j)] = matches_tmp;
-
-					std::vector<cv::DMatch> matches_tmp_flip = FlipMatches(matches_tmp);
-					matches_matrix[std::make_pair(frame_num_j,frame_num_i)] = matches_tmp_flip;
-				}
-			}
-		}
-		for(std::map<std::pair<int,int> ,std::vector<cv::DMatch> >::iterator i = matches_matrix.begin(); i != matches_matrix.end(); ++i) {
-			std::cout << "[" << (*i).first.first << "," << (*i).first.second << "] ";
-		}
-		std::cout << std::endl;
-	}
-	else{
-#pragma omp parallel for
-		for (frame_num_i = 0; frame_num_i < loop1_top; frame_num_i++) {
-			for (int frame_num_j = frame_num_i + 1; frame_num_j < loop2_top; frame_num_j++)
-			{
-				std::cout << "------------ Match " << imgs_names[frame_num_i] << ","<<imgs_names[frame_num_j]<<" ------------\n";
-				std::vector<cv::DMatch> matches_tmp;
-				feature_matcher->MatchFeatures(frame_num_i,frame_num_j,&matches_tmp);
-				matches_matrix[std::make_pair(frame_num_i,frame_num_j)] = matches_tmp;
-
-				std::vector<cv::DMatch> matches_tmp_flip = FlipMatches(matches_tmp);
-				matches_matrix[std::make_pair(frame_num_j,frame_num_i)] = matches_tmp_flip;
-			}
-		}
-	}
-	features_matched = true;
-}
-**********/
-
 void MultiViewHandler::GetRGBForPointCloud(
 	const std::vector<struct CloudPoint>& _pcloud,
 	std::vector<cv::Vec3b>& RGBforCloud
